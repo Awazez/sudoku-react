@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import './Sudoku.css'; // Assurez-vous de créer ce fichier CSS pour styliser le jeu
+import './Sudoku.css'; // Assurez-vous d'avoir créé ce fichier de styles
 
 const initialBoard = [
-  [5, 3, 0, 0, 7, 0, 0, 0, 0],
-  [6, 0, 0, 1, 9, 5, 0, 0, 0],
-  [0, 9, 8, 0, 0, 0, 0, 6, 0],
-  [8, 0, 0, 0, 6, 0, 0, 0, 3],
-  [4, 0, 0, 8, 0, 3, 0, 0, 1],
-  [7, 0, 0, 0, 2, 0, 0, 0, 6],
-  [0, 6, 0, 0, 0, 0, 2, 8, 0],
-  [0, 0, 0, 4, 1, 9, 0, 0, 5],
-  [0, 0, 0, 0, 8, 0, 0, 7, 9]
+  [8, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 3, 6, 0, 0, 0, 0, 0],
+  [0, 7, 0, 0, 9, 0, 2, 0, 0],
+  [0, 5, 0, 0, 0, 7, 0, 0, 0],
+  [0, 0, 0, 0, 4, 5, 7, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 3, 0],
+  [0, 0, 1, 0, 0, 0, 0, 6, 8],
+  [0, 0, 8, 5, 0, 0, 0, 1, 0],
+  [0, 9, 0, 0, 0, 0, 4, 0, 0]
 ];
 
 const Sudoku = () => {
@@ -20,6 +20,47 @@ const Sudoku = () => {
     const newBoard = [...board];
     newBoard[row][col] = e.target.value ? parseInt(e.target.value) : 0;
     setBoard(newBoard);
+  };
+
+  const isValid = (board, row, col, num) => {
+    for (let i = 0; i < 9; i++) {
+      const m = 3 * Math.floor(row / 3) + Math.floor(i / 3);
+      const n = 3 * Math.floor(col / 3) + i % 3;
+      if (board[row][i] === num || board[i][col] === num || board[m][n] === num) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const solveSudoku = (board) => {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (board[row][col] === 0) {
+          for (let num = 1; num <= 9; num++) {
+            if (isValid(board, row, col, num)) {
+              board[row][col] = num;
+              if (solveSudoku(board)) {
+                return true;
+              } else {
+                board[row][col] = 0;
+              }
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const handleSolveClick = () => {
+    const newBoard = JSON.parse(JSON.stringify(board)); // Deep clone to avoid direct state mutation
+    if (solveSudoku(newBoard)) {
+      setBoard(newBoard);
+    } else {
+      alert('No solution exists!');
+    }
   };
 
   return (
@@ -34,11 +75,12 @@ const Sudoku = () => {
               min="1" 
               max="9" 
               value={cell === 0 ? '' : cell} 
-              onChange={(e) => handleChange(e, rowIndex, cellIndex)} 
+              onChange={(e) => handleChange(e, rowIndex, cellIndex)}
             />
           ))}
         </div>
       ))}
+      <button onClick={handleSolveClick}>Résoudre le Sudoku</button>
     </div>
   );
 };
