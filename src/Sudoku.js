@@ -1,3 +1,4 @@
+import { paste } from '@testing-library/user-event/dist/paste';
 import React, { useState } from 'react';
 import './Sudoku.css'; // Assurez-vous d'avoir créé ce fichier de styles
 
@@ -59,7 +60,7 @@ const Sudoku = () => {
     if (solveSudoku(newBoard)) {
       setBoard(newBoard);
     } else {
-      alert('No solution exists!');
+      alert('Pas de solution !');
     }
   };
 
